@@ -73,7 +73,7 @@
                         <div class="initials-avatar">{{ student.initials }}</div>
                         <div>
                             <strong>{{ student.name }}</strong>
-                            <div style="font-size:.75rem;color:#64748B;">Class of 2025</div>
+                            <div style="font-size:.75rem;color:#64748B;">Academic Record</div>
                         </div>
                     </div>
                 </td>
@@ -95,6 +95,12 @@
                 </td>
                 <td><button class="icon-btn">⋮</button></td>
             </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align:center;padding:40px;color:#64748B;">
+                    No student records found matching your criteria.
+                </td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
@@ -112,9 +118,9 @@
 
 <!-- Summary Cards -->
 <div class="metrics-grid" style="margin-top:20px;">
-    <div class="card metric-card"><span class="metric-label">AVERAGE GPA</span><span class="metric-value">3.42</span></div>
-    <div class="card metric-card"><span class="metric-label">ATTENDANCE RATE</span><span class="metric-value">94.8%</span></div>
-    <div class="card metric-card dark-card"><span class="metric-label">ACADEMIC WARNINGS</span><span class="metric-value">124</span></div>
+    <div class="card metric-card"><span class="metric-label">AVERAGE GPA</span><span class="metric-value">{{ avg_gpa }}</span></div>
+    <div class="card metric-card"><span class="metric-label">ATTENDANCE RATE</span><span class="metric-value">{{ attendance_rate }}%</span></div>
+    <div class="card metric-card dark-card"><span class="metric-label">ACADEMIC WARNINGS</span><span class="metric-value">{{ warnings_count }}</span></div>
 </div>
 
 {% endblock %}

@@ -64,6 +64,10 @@
             </div>
         </div>
     </div>
+    {% else %}
+    <div class="card" style="grid-column: 1 / -1; padding: 40px; text-align: center; color: #64748B;">
+        No campus performance data available.
+    </div>
     {% endfor %}
 </div>
 
@@ -82,7 +86,7 @@
         <div class="demo-donut-wrapper">
             <canvas id="demographicsChart"></canvas>
             <div class="demo-center-label">
-                <span class="demo-total">1.2k</span>
+                <span class="demo-total">{{ metrics.total_students }}</span>
                 <span class="demo-total-label">TOTAL</span>
             </div>
         </div>
@@ -133,6 +137,10 @@
                 <td>{{ student.grade }}</td>
                 <td>{{ student.date }}</td>
                 <td><span class="status-pill {{ student.status.lower() }}">{{ student.status }}</span></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align:center;padding:30px;color:#64748B;">No students found.</td>
             </tr>
             {% endfor %}
         </tbody>

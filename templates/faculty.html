@@ -25,9 +25,9 @@
     </div>
     <div class="card" style="padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>
-        <p class="metric-value" style="font-size:2.5rem;">94%</p>
-        <p class="metric-label">Present Today</p>
-        <span class="metric-sub positive">+2.4% FROM LAST WEEK</span>
+        <p class="metric-value" style="font-size:2.5rem;">{{ "%.0f"|format(attendance.values()|sum / attendance.values()|length) if attendance else "0" }}%</p>
+        <p class="metric-label">Average Presence</p>
+        <span class="metric-sub">DATA SYNCED FROM API</span>
     </div>
     <div class="card dark-card" style="padding:24px;display:flex;flex-direction:column;gap:12px;">
         <h3 style="color:#fff;">Quick Action</h3>
@@ -44,7 +44,7 @@
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <div>
             <h3 class="card-title">Institutional Faculty</h3>
-            <p class="card-subtitle">Showing {{ faculty|length }} registered educators across 12 departments</p>
+            <p class="card-subtitle">Showing {{ faculty|length }} registered educators</p>
         </div>
     </div>
     <table class="data-table">
@@ -69,7 +69,7 @@
                     </div>
                 </td>
                 <td>{{ f.dept }}</td>
-                <td><span class="campus-badge">{{ f.campus.replace(' Campus','').upper() }}<br>CAMPUS</span></td>
+                <td><span class="campus-badge">{{ f.campus.replace(' Campus','').upper() if f.campus else 'N/A' }}<br>CAMPUS</span></td>
                 <td>{{ f.classes }} classes</td>
                 <td>{{ f.tenure }}</td>
                 <td>
@@ -78,6 +78,12 @@
                     {% else %}
                     <span class="status-pill" style="background:#FEF3C7;color:#92400E;">ABSENT</span>
                     {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align:center;padding:40px;color:#64748B;">
+                    No faculty members found in the directory.
                 </td>
             </tr>
             {% endfor %}
