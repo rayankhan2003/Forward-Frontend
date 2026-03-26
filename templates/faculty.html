@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-header">
+    <h1>Faculty Directory</h1>
+    <div style="display:flex;gap:12px;">
+        <button class="btn-outline"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/></svg> Filter Dept.</button>
+        <button class="btn-outline"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV</button>
+    </div>
+</div>
+
+<!-- Attendance Summary + Quick Action -->
+<div class="faculty-top-grid">
+    <div class="card" style="padding:24px;">
+        <p class="metric-label">WEEKLY STAFF PRESENCE</p>
+        <h3 style="margin-bottom:20px;">Attendance Summary</h3>
+        <div class="weekly-bar-chart">
+            {% for day, pct in attendance.items() %}
+            <div class="day-bar-wrap">
+                <div class="day-bar" style="height:{{ pct * 1.4 }}px; background: {{ '#0F172A' if loop.last else '#1D4ED8' }};"></div>
+                <span class="day-label">{{ day }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="card" style="padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>
+        <p class="metric-value" style="font-size:2.5rem;">94%</p>
+        <p class="metric-label">Present Today</p>
+        <span class="metric-sub positive">+2.4% FROM LAST WEEK</span>
+    </div>
+    <div class="card dark-card" style="padding:24px;display:flex;flex-direction:column;gap:12px;">
+        <h3 style="color:#fff;">Quick Action</h3>
+        <p style="color:rgba(255,255,255,.7);font-size:.85rem;">Need to sync with the team?</p>
+        <button class="btn" style="background:#fff;color:#0F172A;margin-top:auto;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Schedule Meeting
+        </button>
+    </div>
+</div>
+
+<!-- Faculty List -->
+<div class="card table-card" style="margin-top:20px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div>
+            <h3 class="card-title">Institutional Faculty</h3>
+            <p class="card-subtitle">Showing {{ faculty|length }} registered educators across 12 departments</p>
+        </div>
+    </div>
+    <table class="data-table">
+        <thead><tr>
+            <th>FACULTY MEMBER</th>
+            <th>DEPARTMENT</th>
+            <th>CAMPUS</th>
+            <th>CLASSES</th>
+            <th>TENURE</th>
+            <th>STATUS</th>
+        </tr></thead>
+        <tbody>
+            {% for f in faculty %}
+            <tr>
+                <td>
+                    <div class="student-info">
+                        <div class="initials-avatar" style="background:#0F172A;">{{ f.initials }}</div>
+                        <div>
+                            <strong>{{ f.name }}</strong>
+                            <div style="font-size:.75rem;color:#64748B;">{{ f.role }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>{{ f.dept }}</td>
+                <td><span class="campus-badge">{{ f.campus.replace(' Campus','').upper() }}<br>CAMPUS</span></td>
+                <td>{{ f.classes }} classes</td>
+                <td>{{ f.tenure }}</td>
+                <td>
+                    {% if f.present %}
+                    <span class="status-pill enrolled">PRESENT</span>
+                    {% else %}
+                    <span class="status-pill" style="background:#FEF3C7;color:#92400E;">ABSENT</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

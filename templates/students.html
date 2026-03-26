@@ -1,0 +1,120 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <p class="breadcrumb">DIRECTORY &rsaquo; <strong>STUDENTS</strong></p>
+        <h1>Student Records</h1>
+        <p class="page-desc">Managing {{ total }} active enrollments across 4 campuses.</p>
+    </div>
+    <div style="display:flex;gap:12px;">
+        <button class="btn-outline"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export to CSV</button>
+        <button class="btn-action btn-dark"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg> Admit Student</button>
+    </div>
+</div>
+
+<!-- Filters -->
+<form method="GET" class="filters-row card">
+    <div class="filter-group">
+        <label>GRADE LEVEL</label>
+        <select name="grade" class="filter-select">
+            <option value="">All Grades</option>
+            <option value="9th"  {{ 'selected' if grade=='9th' }}>Grade 9</option>
+            <option value="10th" {{ 'selected' if grade=='10th' }}>Grade 10</option>
+            <option value="11th" {{ 'selected' if grade=='11th' }}>Grade 11</option>
+            <option value="12th" {{ 'selected' if grade=='12th' }}>Grade 12</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>CAMPUS LOCATION</label>
+        <select name="campus" class="filter-select">
+            <option value="">All Campuses</option>
+            <option value="Phase 1" {{ 'selected' if campus=='Phase 1' }}>Phase 1 Campus</option>
+            <option value="Phase 2" {{ 'selected' if campus=='Phase 2' }}>Phase 2 Campus</option>
+            <option value="Ring Road" {{ 'selected' if campus=='Ring Road' }}>Ring Road Campus</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <label>ACADEMIC STATUS</label>
+        <select name="status" class="filter-select">
+            <option value="">All Statuses</option>
+            <option value="ENROLLED" {{ 'selected' if status=='ENROLLED' }}>Enrolled</option>
+            <option value="ALUMNI"   {{ 'selected' if status=='ALUMNI' }}>Alumni</option>
+        </select>
+    </div>
+    <div class="filter-group search-group">
+        <label>SEARCH</label>
+        <div class="search-input-wrap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" name="q" value="{{ q }}" placeholder="Quick search students..." class="filter-input">
+        </div>
+    </div>
+    <button type="submit" class="btn-action btn-dark" style="align-self:flex-end;">Search</button>
+</form>
+
+<!-- Table -->
+<div class="card table-card" style="margin-top:20px;">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>STUDENT PROFILE</th>
+                <th>ID &amp; GRADE</th>
+                <th>CAMPUS</th>
+                <th>CONTACT INFO</th>
+                <th>STANDING</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>
+                    <div class="student-info">
+                        <div class="initials-avatar">{{ student.initials }}</div>
+                        <div>
+                            <strong>{{ student.name }}</strong>
+                            <div style="font-size:.75rem;color:#64748B;">Class of 2025</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span style="color:#1D4ED8;font-weight:600;font-size:.82rem;">#{{ student.id_num }}</span><br>
+                    <span style="font-size:.82rem;">{{ student.grade }}</span>
+                </td>
+                <td>
+                    <span class="campus-badge">{{ student.school.replace(' Campus','').upper() }}<br>CAMPUS</span>
+                </td>
+                <td style="font-size:.82rem;">
+                    {{ student.email }}<br>
+                    <span style="color:#64748B;">{{ student.phone }}</span>
+                </td>
+                <td>
+                    <span class="standing-dot {{ 'active-dot' if student.status == 'ENROLLED' else 'inactive-dot' }}"></span>
+                    {% if student.gpa|float >= 3.5 %}Dean's List ({{ student.gpa }} GPA)
+                    {% else %}Good Standing ({{ student.gpa }} GPA){% endif %}
+                </td>
+                <td><button class="icon-btn">⋮</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination-bar">
+        <span>{{ (page-1)*4+1 }}–{{ [page*4, total]|min }} of {{ total }} students</span>
+        <div class="page-controls">
+            {% if page > 1 %}<a href="?q={{ q }}&grade={{ grade }}&campus={{ campus }}&status={{ status }}&page={{ page-1 }}" class="page-btn">&lsaquo;</a>{% endif %}
+            {% for p in range(1, pages+1) %}
+            <a href="?q={{ q }}&grade={{ grade }}&campus={{ campus }}&status={{ status }}&page={{ p }}" class="page-btn {{ 'active-page' if p == page }}">{{ p }}</a>
+            {% endfor %}
+            {% if page < pages %}<a href="?q={{ q }}&grade={{ grade }}&campus={{ campus }}&status={{ status }}&page={{ page+1 }}" class="page-btn">&rsaquo;</a>{% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="metrics-grid" style="margin-top:20px;">
+    <div class="card metric-card"><span class="metric-label">AVERAGE GPA</span><span class="metric-value">3.42</span></div>
+    <div class="card metric-card"><span class="metric-label">ATTENDANCE RATE</span><span class="metric-value">94.8%</span></div>
+    <div class="card metric-card dark-card"><span class="metric-label">ACADEMIC WARNINGS</span><span class="metric-value">124</span></div>
+</div>
+
+{% endblock %}

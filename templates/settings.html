@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-header">
+    <h1>Settings</h1>
+</div>
+
+<div class="settings-grid">
+    <!-- Profile Settings -->
+    <div class="card" style="padding:28px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+            <div>
+                <h3 class="card-title">Profile Settings</h3>
+                <p class="card-subtitle">Manage your personal administrative identity and credentials.</p>
+            </div>
+            <button class="btn-action btn-dark">Save Changes</button>
+        </div>
+
+        <div class="profile-photo-row">
+            <div class="profile-photo-wrap">
+                <img src="https://ui-avatars.com/api/?name=Alexander+Pierce&background=0F172A&color=fff&size=100" alt="Profile" class="profile-photo">
+                <button class="photo-edit-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                </button>
+            </div>
+            <div>
+                <strong>Profile Photo</strong>
+                <p style="font-size:.8rem;color:#64748B;">PNG, JPG or GIF. Max 2MB. Recommended 400×400px.</p>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>FULL NAME</label>
+                <input type="text" value="Alexander Pierce" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>EMAIL ADDRESS</label>
+                <input type="email" value="a.pierce@forward-edu.org" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>DEPARTMENT</label>
+                <select class="form-input">
+                    <option>Central Administration</option>
+                    <option>Academic Affairs</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>ADMIN ID</label>
+                <input type="text" value="FEDU-ADMIN-008" class="form-input" readonly style="background:#F8FAFC;color:#64748B;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Preferences -->
+    <div class="card" style="padding:28px;">
+        <h3 class="card-title">Notification Preferences</h3>
+        <p class="card-subtitle">Control when and how you are alerted.</p>
+        <div class="notif-list">
+            <div class="notif-item">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <div class="notif-info">
+                    <strong>Email Alerts</strong>
+                    <p>Daily digest reports</p>
+                </div>
+                <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+            <div class="notif-item">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <div class="notif-info">
+                    <strong>Push Notifications</strong>
+                    <p>Critical system events</p>
+                </div>
+                <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="notif-item">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                <div class="notif-info">
+                    <strong>SMS Security</strong>
+                    <p>Two-factor authentication</p>
+                </div>
+                <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

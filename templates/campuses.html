@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <p class="breadcrumb">INSTITUTIONAL REGISTRY</p>
+        <h1>Active Campuses</h1>
+        <p class="page-desc">Overview of regional educational centers, leadership structures, and localized facility management.</p>
+    </div>
+    <button class="btn-action btn-dark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
+        Add New Campus
+    </button>
+</div>
+
+<div class="campus-cards-grid">
+    {% for campus in campuses %}
+    <div class="campus-full-card card">
+        <div class="campus-img-container" style="height:260px;">
+            <img src="{{ campus.img }}" alt="{{ campus.name }}" class="campus-full-img">
+            <div class="campus-img-overlay">
+                <span class="campus-type-badge">{{ campus.type }}</span>
+                <h3 class="campus-img-title">{{ campus.name }}</h3>
+            </div>
+        </div>
+        <div class="campus-full-info">
+            <div class="campus-header-row">
+                <div>
+                    <h4>{{ campus.name }}</h4>
+                    <p class="campus-district">{{ campus.district }}</p>
+                </div>
+                <span class="campus-active-badge">&#9679; ACTIVE</span>
+            </div>
+            <div class="campus-detail-row">
+                <div class="campus-stat"><span class="cs-label">STUDENTS</span><span class="cs-val">{{ campus.students }}</span></div>
+                <div class="campus-stat"><span class="cs-label">PERFORMANCE</span><span class="cs-val">{{ campus.performance_num }}%</span></div>
+                <div class="campus-stat"><span class="cs-label">FOUNDED</span><span class="cs-val">{{ campus.founded }}</span></div>
+            </div>
+            <div class="campus-actions">
+                <button class="btn-outline">View Details</button>
+                <button class="btn-outline">Manage Staff</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

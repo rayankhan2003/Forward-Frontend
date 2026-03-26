@@ -1,0 +1,155 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- ── Metric Cards ── -->
+<div class="metrics-grid">
+    <div class="card metric-card">
+        <span class="metric-label">TOTAL STUDENTS ENROLLED</span>
+        <span class="metric-value">{{ metrics.total_students | int | string | replace('0','0') }}{{ ',' if metrics.total_students >= 1000 else '' }}</span>
+        <span class="metric-sub positive">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            +{{ metrics.students_growth }}% vs last term
+        </span>
+    </div>
+    <div class="card metric-card">
+        <span class="metric-label">TOTAL FACULTY</span>
+        <span class="metric-value">{{ metrics.total_faculty }}</span>
+        <span class="metric-sub">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            {{ metrics.faculty_ratio }} ratio
+        </span>
+    </div>
+    <div class="card metric-card dark-card">
+        <span class="metric-label">YEARLY GROWTH %</span>
+        <span class="metric-value">+{{ metrics.yearly_growth }}%</span>
+        <span class="metric-sub">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            New campus impact
+        </span>
+    </div>
+</div>
+
+<!-- ── Campus Performance ── -->
+<div class="section-header">
+    <div>
+        <h2 class="section-title">Campus Performance</h2>
+        <p class="section-sub">Live metrics across regional educational centers</p>
+    </div>
+    <a href="#" class="view-map-link">View Detailed Map &rsaquo;</a>
+</div>
+
+<div class="campus-cards-grid">
+    {% for campus in campuses %}
+    <div class="campus-full-card card">
+        <div class="campus-img-container">
+            <img src="{{ campus.img }}" alt="{{ campus.name }}" class="campus-full-img">
+        </div>
+        <div class="campus-full-info">
+            <div class="campus-header-row">
+                <div>
+                    <h4>{{ campus.name }}</h4>
+                    <p class="campus-district">{{ campus.district }}</p>
+                </div>
+                <span class="campus-active-badge">&#9679; ACTIVE</span>
+            </div>
+            <div class="campus-stats-row">
+                <div>
+                    <p class="stat-value">{{ campus.students }}</p>
+                    <p class="stat-label">STUDENTS</p>
+                </div>
+                <div class="performance-donut-wrapper">
+                    <canvas class="donut-chart" data-performance="{{ campus.performance_num }}"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- ── Charts Row ── -->
+<div class="charts-row">
+    <div class="card chart-card">
+        <h3 class="card-title">Enrollment Trends</h3>
+        <p class="card-subtitle">Annual comparisons across campuses</p>
+        <div class="chart-area">
+            <canvas id="enrollmentChart"></canvas>
+        </div>
+    </div>
+    <div class="card chart-card">
+        <h3 class="card-title">Student Demographics</h3>
+        <p class="card-subtitle">Division of grade levels</p>
+        <div class="demo-donut-wrapper">
+            <canvas id="demographicsChart"></canvas>
+            <div class="demo-center-label">
+                <span class="demo-total">1.2k</span>
+                <span class="demo-total-label">TOTAL</span>
+            </div>
+        </div>
+        <div class="demo-legend">
+            {% for item in demographics %}
+            <div class="demo-legend-item">
+                <span class="demo-dot" style="background:{{ item.color }}"></span>
+                <span class="demo-name">{{ item.label }}</span>
+                <span class="demo-pct">{{ item.pct }}%</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- ── Student Table ── -->
+<div class="card table-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <h3 class="card-title" style="margin-bottom:0;">Student List</h3>
+        <form method="GET" action="/students" style="display:flex;gap:8px;">
+            <div class="search-input-wrap" style="min-width:240px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" name="q" placeholder="Quick search students..." class="filter-input" style="border:none;padding:7px 0;">
+            </div>
+            <button type="submit" class="btn-action btn-dark" style="padding:8px 16px;">Search</button>
+        </form>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Assigned School</th>
+                <th>Grade Level</th>
+                <th>Enrollment Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>
+                    <div class="student-info">
+                        <div class="initials-avatar">{{ student.name[:1] }}</div>
+                        <span>{{ student.name }}</span>
+                    </div>
+                </td>
+                <td>{{ student.school }}</td>
+                <td>{{ student.grade }}</td>
+                <td>{{ student.date }}</td>
+                <td><span class="status-pill {{ student.status.lower() }}">{{ student.status }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination-bar">
+        <span>Showing first 4 of {{ metrics.total_students }} students &mdash; <a href="/students" style="color:#1D4ED8;font-weight:600;">View all</a></span>
+        <div class="page-controls">
+            <a href="/students?page=1" class="page-btn active-page">1</a>
+            <a href="/students?page=2" class="page-btn">2</a>
+            <a href="/students?page=3" class="page-btn">3</a>
+            <a href="/students?page=2" class="page-btn">&rsaquo;</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const trendsData = {{ trends | tojson }};
+    const demographicsData = {{ demographics | tojson }};
+</script>
+{% endblock %}
