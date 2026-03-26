@@ -5,6 +5,10 @@ import logging
 API_KEY = "YOUR_API_KEY_HERE"
 API_BASE_URL = "https://api.yourwebsite.com/v1"
 
+# ── Odoo Dashboard API ──────────────────────────
+ODOO_URL = "http://localhost:8069"
+ODOO_API_KEY = "FGC-DASHBOARD-SECRET-2026"
+
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -14,6 +18,40 @@ def _get_headers():
         "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json"
     }
+
+# ── Odoo helpers ─────────────────────────────────
+def _odoo_request(path):
+    """Call an Odoo dashboard endpoint and return the parsed JSON data list/dict."""
+    url = f"{ODOO_URL}{path}"
+    try:
+        resp = requests.get(url, headers={"X-API-KEY": ODOO_API_KEY}, timeout=10)
+        resp.raise_for_status()
+        body = resp.json()
+        return body.get("data", body)
+    except requests.RequestException as e:
+        logger.error(f"Odoo API error ({path}): {e}")
+        return None
+
+def get_odoo_stats():
+    """Fetch total_students / total_teachers counts from Odoo."""
+    data = _odoo_request("/api/v1/dashboard/stats")
+    if data:
+        return data
+    return {"total_students": 0, "total_teachers": 0}
+
+def get_odoo_students():
+    """Fetch full student list from Odoo (name, father_name, class, roll_no)."""
+    data = _odoo_request("/api/v1/dashboard/students")
+    if isinstance(data, list):
+        return data
+    return []
+
+def get_odoo_teachers():
+    """Fetch full teacher list from Odoo (name, cnic, subjects)."""
+    data = _odoo_request("/api/v1/dashboard/teachers")
+    if isinstance(data, list):
+        return data
+    return []
 
 def _handle_request(endpoint, params=None):
     """Internal helper to handle API requests and errors."""
