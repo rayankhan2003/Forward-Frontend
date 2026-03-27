@@ -5,19 +5,36 @@ app = Flask(__name__)
 
 @app.route('/')
 def dashboard():
+    campus = request.args.get('campus', '').strip()
+
     metrics      = api_client.get_metrics()
     trends       = api_client.get_enrollment_trends()
     campuses     = api_client.get_campuses()
     demographics = api_client.get_demographics()
-    odoo_stats   = api_client.get_odoo_stats()
-    odoo_students = api_client.get_odoo_students()
+
+    # Filter by campus if selected, otherwise show combined stats
+    if campus and campus in api_client.ODOO_INSTANCES:
+        single_stats = api_client.get_odoo_stats(campus)
+        combined_stats = {
+            'total_students': single_stats.get('total_students', 0),
+            'total_teachers': single_stats.get('total_teachers', 0),
+            'per_campus': {campus: single_stats},
+        }
+        odoo_students = api_client.get_all_odoo_students(campus_filter=campus)
+    else:
+        combined_stats = api_client.get_combined_odoo_stats()
+        odoo_students  = api_client.get_all_odoo_students()
+        campus = ''
+
     return render_template('dashboard.html',
                            metrics=metrics, trends=trends,
                            campuses=campuses,
                            demographics=demographics,
-                           odoo_stats=odoo_stats,
+                           combined_stats=combined_stats,
+                           odoo_instances=api_client.ODOO_INSTANCES,
                            odoo_students=odoo_students[:10],
-                           active_page='dashboard')
+                           active_page='dashboard',
+                           campus=campus)
 
 @app.route('/campuses')
 def campuses():
@@ -27,29 +44,51 @@ def campuses():
 
 @app.route('/students')
 def students():
-    q    = request.args.get('q', '').lower()
-    page = request.args.get('page', 1, type=int)
-    all_s = api_client.get_odoo_students()
-    # filter by name or father_name
+    q      = request.args.get('q', '').lower()
+    page   = request.args.get('page', 1, type=int)
+    campus = request.args.get('campus', '').strip()
+
+    # Fetch from one campus or all
+    if campus and campus in api_client.ODOO_INSTANCES:
+        all_s = api_client.get_all_odoo_students(campus_filter=campus)
+    else:
+        all_s = api_client.get_all_odoo_students()
+        campus = ''  # reset invalid values
+
+    # search filter
     if q:
         all_s = [s for s in all_s
                  if q in s.get('name','').lower()
                  or q in s.get('father_name','').lower()]
-    total = len(all_s)
+
+    total    = len(all_s)
     per_page = 10
-    start = (page-1)*per_page
-    paged = all_s[start:start+per_page]
-    pages = max(1, (total + per_page - 1) // per_page)
+    start    = (page - 1) * per_page
+    paged    = all_s[start:start + per_page]
+    pages    = max(1, (total + per_page - 1) // per_page)
+
     return render_template('students.html',
                            students=paged, total=total,
                            page=page, pages=pages,
-                           q=request.args.get('q',''),
+                           q=request.args.get('q', ''),
+                           campus=campus,
+                           odoo_instances=api_client.ODOO_INSTANCES,
                            active_page='students')
 
 @app.route('/faculty')
 def faculty():
+    campus = request.args.get('campus', '').strip()
+
+    if campus and campus in api_client.ODOO_INSTANCES:
+        teachers = api_client.get_all_odoo_teachers(campus_filter=campus)
+    else:
+        teachers = api_client.get_all_odoo_teachers()
+        campus = ''
+
     return render_template('faculty.html',
-                           faculty=api_client.get_odoo_teachers(),
+                           faculty=teachers,
+                           campus=campus,
+                           odoo_instances=api_client.ODOO_INSTANCES,
                            active_page='faculty')
 
 @app.route('/reports')

@@ -5,20 +5,31 @@
     <div>
         <p class="breadcrumb">DIRECTORY &rsaquo; <strong>STUDENTS</strong></p>
         <h1>Student Records</h1>
-        <p class="page-desc">Viewing {{ total }} registered students from Odoo ERP.</p>
+        <p class="page-desc">Viewing {{ total }} registered students{% if campus %} from {{ odoo_instances[campus].name }}{% else %} across all campuses{% endif %}.</p>
     </div>
     <div style="display:flex;gap:12px;">
         <button class="btn-outline"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export to CSV</button>
     </div>
 </div>
 
-<!-- Search -->
+<!-- Campus Filter + Search -->
 <form method="GET" class="filters-row card">
-    <div class="filter-group search-group" style="flex:1;">
-        <label>SEARCH BY NAME / FATHER NAME</label>
-        <div class="search-input-wrap">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="text" name="q" value="{{ q }}" placeholder="Quick search students..." class="filter-input">
+    <div class="filter-group" style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;flex:1;">
+        <div>
+            <label style="display:block;font-size:.7rem;font-weight:600;color:#64748B;margin-bottom:4px;">CAMPUS</label>
+            <select name="campus" class="filter-input" style="padding:9px 12px;min-width:180px;" onchange="this.form.submit()">
+                <option value="">All Campuses</option>
+                {% for key, inst in odoo_instances.items() %}
+                <option value="{{ key }}" {{ 'selected' if campus == key }}>{{ inst.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="search-group" style="flex:1;">
+            <label style="display:block;font-size:.7rem;font-weight:600;color:#64748B;margin-bottom:4px;">SEARCH BY NAME / FATHER NAME</label>
+            <div class="search-input-wrap">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" name="q" value="{{ q }}" placeholder="Quick search students..." class="filter-input">
+            </div>
         </div>
     </div>
     <button type="submit" class="btn-action btn-dark" style="align-self:flex-end;">Search</button>
@@ -33,6 +44,7 @@
                 <th>FATHER NAME</th>
                 <th>CLASS</th>
                 <th>ROLL NO</th>
+                <th>CAMPUS</th>
             </tr>
         </thead>
         <tbody>
@@ -49,10 +61,11 @@
                 <td>{{ student.father_name }}</td>
                 <td><span class="campus-badge">{{ student['class'] }}</span></td>
                 <td style="font-weight:600;color:#1D4ED8;">#{{ student.roll_no }}</td>
+                <td><span class="campus-badge" style="background:#EEF2FF;color:#4338CA;">{{ student.campus_name }}</span></td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="4" style="text-align:center;padding:40px;color:#64748B;">
+                <td colspan="5" style="text-align:center;padding:40px;color:#64748B;">
                     No student records found matching your criteria.
                 </td>
             </tr>
@@ -62,11 +75,11 @@
     <div class="pagination-bar">
         <span>{{ (page-1)*10+1 }}&ndash;{{ [page*10, total]|min }} of {{ total }} students</span>
         <div class="page-controls">
-            {% if page > 1 %}<a href="?q={{ q }}&page={{ page-1 }}" class="page-btn">&lsaquo;</a>{% endif %}
+            {% if page > 1 %}<a href="?q={{ q }}&campus={{ campus }}&page={{ page-1 }}" class="page-btn">&lsaquo;</a>{% endif %}
             {% for p in range(1, pages+1) %}
-            <a href="?q={{ q }}&page={{ p }}" class="page-btn {{ 'active-page' if p == page }}">{{ p }}</a>
+            <a href="?q={{ q }}&campus={{ campus }}&page={{ p }}" class="page-btn {{ 'active-page' if p == page }}">{{ p }}</a>
             {% endfor %}
-            {% if page < pages %}<a href="?q={{ q }}&page={{ page+1 }}" class="page-btn">&rsaquo;</a>{% endif %}
+            {% if page < pages %}<a href="?q={{ q }}&campus={{ campus }}&page={{ page+1 }}" class="page-btn">&rsaquo;</a>{% endif %}
         </div>
     </div>
 </div>

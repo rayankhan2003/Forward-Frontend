@@ -8,12 +8,25 @@
     </div>
 </div>
 
+<!-- Campus Filter -->
+<div class="card" style="margin-bottom:20px;display:flex;align-items:center;gap:12px;padding:14px 20px;">
+    <label style="font-size:.7rem;font-weight:600;color:#64748B;">CAMPUS</label>
+    <form method="GET" style="display:flex;gap:8px;align-items:center;">
+        <select name="campus" class="filter-input" style="padding:9px 12px;min-width:180px;" onchange="this.form.submit()">
+            <option value="">All Campuses</option>
+            {% for key, inst in odoo_instances.items() %}
+            <option value="{{ key }}" {{ 'selected' if campus == key }}>{{ inst.name }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
 <!-- Faculty List -->
-<div class="card table-card" style="margin-top:20px;">
+<div class="card table-card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <div>
             <h3 class="card-title">Institutional Faculty</h3>
-            <p class="card-subtitle">Showing {{ faculty|length }} registered educators from Odoo ERP</p>
+            <p class="card-subtitle">Showing {{ faculty|length }} registered educators{% if campus %} from {{ odoo_instances[campus].name }}{% else %} across all campuses{% endif %}</p>
         </div>
     </div>
     <table class="data-table">
@@ -21,6 +34,7 @@
             <th>FACULTY MEMBER</th>
             <th>CNIC</th>
             <th>SUBJECTS</th>
+            <th>CAMPUS</th>
         </tr></thead>
         <tbody>
             {% for f in faculty %}
@@ -43,10 +57,11 @@
                         <span style="color:#94A3B8;">No subjects assigned</span>
                     {% endif %}
                 </td>
+                <td><span class="campus-badge" style="background:#EEF2FF;color:#4338CA;">{{ f.campus_name }}</span></td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="3" style="text-align:center;padding:40px;color:#64748B;">
+                <td colspan="4" style="text-align:center;padding:40px;color:#64748B;">
                     No faculty members found in the directory.
                 </td>
             </tr>
