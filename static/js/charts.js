@@ -42,33 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* ── Student Demographics donut ── */
-    const demoCtx = document.getElementById('demographicsChart');
-    if (demoCtx && typeof demographicsData !== 'undefined') {
-        new Chart(demoCtx.getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: demographicsData.map(d => d.label),
-                datasets: [{
-                    data: demographicsData.map(d => d.pct),
-                    backgroundColor: demographicsData.map(d => d.color),
-                    borderWidth: 0,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: false,
-                cutout: '72%',
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: ctx => ` ${ctx.label}: ${ctx.parsed}%`
-                        }
-                    }
-                }
-            }
-        });
-    }
+    // Removed as per UI update: Demographics card is no longer part of the dashboard.
 
     /* ── Campus performance mini-donuts ── */
     document.querySelectorAll('.donut-chart').forEach(function (canvas) {

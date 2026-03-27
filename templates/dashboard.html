@@ -3,7 +3,7 @@
 {% block content %}
 
 <!-- ── Metric Cards (Combined Totals) ── -->
-<div class="metrics-grid">
+<div class="metrics-grid" style="grid-template-columns: repeat(2, 1fr);">
     <div class="card metric-card">
         <span class="metric-label">TOTAL STUDENTS ENROLLED</span>
         <span class="metric-value">{{ combined_stats.total_students }}</span>
@@ -18,14 +18,6 @@
         <span class="metric-sub">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             {% if campus %}{{ odoo_instances[campus].name }}{% else %}Combined from 3 campuses{% endif %}
-        </span>
-    </div>
-    <div class="card metric-card dark-card">
-        <span class="metric-label">YEARLY GROWTH %</span>
-        <span class="metric-value">+{{ metrics.yearly_growth }}%</span>
-        <span class="metric-sub">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-            New campus impact
         </span>
     </div>
 </div>
@@ -69,26 +61,33 @@
 </div>
 
 <div class="campus-cards-grid">
-    {% for campus in campuses %}
+    {% for key, stats in combined_stats.per_campus.items() %}
     <div class="campus-full-card card">
         <div class="campus-img-container">
-            <img src="{{ campus.img }}" alt="{{ campus.name }}" class="campus-full-img">
+            {% if key == 'boys_school' %}
+            <img src="{{ url_for('static', filename='img/boys-school.jpg') }}" alt="{{ odoo_instances[key].name }}" class="campus-full-img">
+            {% elif key == 'girls_school' %}
+            <img src="{{ url_for('static', filename='img/girls-school.jpg') }}" alt="{{ odoo_instances[key].name }}" class="campus-full-img">
+            {% else %}
+            <img src="{{ url_for('static', filename='img/girls-college.jpg') }}" alt="{{ odoo_instances[key].name }}" class="campus-full-img">
+            {% endif %}
         </div>
         <div class="campus-full-info">
             <div class="campus-header-row">
                 <div>
-                    <h4>{{ campus.name }}</h4>
-                    <p class="campus-district">{{ campus.district }}</p>
+                    <h4>{{ odoo_instances[key].name }}</h4>
+                    <p class="campus-district">ACTIVE REGION</p>
                 </div>
                 <span class="campus-active-badge">&#9679; ACTIVE</span>
             </div>
             <div class="campus-stats-row">
                 <div>
-                    <p class="stat-value">{{ campus.students }}</p>
-                    <p class="stat-label">STUDENTS</p>
+                    <p class="stat-value">{{ stats.total_students }}</p>
+                    <p class="stat-label">TOTAL STUDENTS</p>
                 </div>
-                <div class="performance-donut-wrapper">
-                    <canvas class="donut-chart" data-performance="{{ campus.performance_num }}"></canvas>
+                <div>
+                    <p class="stat-value" style="font-size: 1.2rem;">{{ stats.total_teachers }}</p>
+                    <p class="stat-label">TEACHERS</p>
                 </div>
             </div>
         </div>
@@ -101,32 +100,12 @@
 </div>
 
 <!-- ── Charts Row ── -->
-<div class="charts-row">
+<div class="charts-row" style="grid-template-columns: 1fr;">
     <div class="card chart-card">
         <h3 class="card-title">Enrollment Trends</h3>
-        <p class="card-subtitle">Annual comparisons across campuses</p>
+        <p class="card-subtitle">Total students per school from active Odoo instances</p>
         <div class="chart-area">
             <canvas id="enrollmentChart"></canvas>
-        </div>
-    </div>
-    <div class="card chart-card">
-        <h3 class="card-title">Student Demographics</h3>
-        <p class="card-subtitle">Division of grade levels</p>
-        <div class="demo-donut-wrapper">
-            <canvas id="demographicsChart"></canvas>
-            <div class="demo-center-label">
-                <span class="demo-total">{{ combined_stats.total_students }}</span>
-                <span class="demo-total-label">TOTAL</span>
-            </div>
-        </div>
-        <div class="demo-legend">
-            {% for item in demographics %}
-            <div class="demo-legend-item">
-                <span class="demo-dot" style="background:{{ item.color }}"></span>
-                <span class="demo-name">{{ item.label }}</span>
-                <span class="demo-pct">{{ item.pct }}%</span>
-            </div>
-            {% endfor %}
         </div>
     </div>
 </div>

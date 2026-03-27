@@ -8,9 +8,22 @@ def dashboard():
     campus = request.args.get('campus', '').strip()
 
     metrics      = api_client.get_metrics()
-    trends       = api_client.get_enrollment_trends()
     campuses     = api_client.get_campuses()
     demographics = api_client.get_demographics()
+
+    # Get stats from all 3 schools for the chart
+    all_stats = api_client.get_all_odoo_stats()
+    
+    # Prepare chart data (X-axis: School name, Y-axis: Students)
+    trends = {
+        "labels": [api_client.ODOO_INSTANCES[k]["name"] for k in all_stats],
+        "datasets": [{
+            "label": "Total Students",
+            "data": [all_stats[k].get("total_students", 0) for k in all_stats],
+            "backgroundColor": ["#3B82F6", "#EC4899", "#8B5CF6"],
+            "borderRadius": 6
+        }]
+    }
 
     # Filter by campus if selected, otherwise show combined stats
     if campus and campus in api_client.ODOO_INSTANCES:
@@ -39,7 +52,8 @@ def dashboard():
 @app.route('/campuses')
 def campuses():
     return render_template('campuses.html',
-                           campuses=api_client.get_campuses(),
+                           combined_stats=api_client.get_combined_odoo_stats(),
+                           odoo_instances=api_client.ODOO_INSTANCES,
                            active_page='campuses')
 
 @app.route('/students')
@@ -78,16 +92,30 @@ def students():
 @app.route('/faculty')
 def faculty():
     campus = request.args.get('campus', '').strip()
+    subject = request.args.get('subject', '').strip()
 
-    if campus and campus in api_client.ODOO_INSTANCES:
-        teachers = api_client.get_all_odoo_teachers(campus_filter=campus)
-    else:
-        teachers = api_client.get_all_odoo_teachers()
-        campus = ''
+    # Fetch teachers based on campus filter
+    teachers = api_client.get_all_odoo_teachers(campus_filter=campus)
+    
+    # Extract all unique subjects for the filter dropdown
+    all_subjects = set()
+    for t in teachers:
+        subjs = t.get('subjects', [])
+        if isinstance(subjs, list):
+            for s in subjs:
+                all_subjects.add(s)
+    
+    all_subjects = sorted(list(all_subjects))
+
+    # Apply subject filter if selected
+    if subject:
+        teachers = [t for t in teachers if subject in t.get('subjects', [])]
 
     return render_template('faculty.html',
                            faculty=teachers,
                            campus=campus,
+                           selected_subject=subject,
+                           all_subjects=all_subjects,
                            odoo_instances=api_client.ODOO_INSTANCES,
                            active_page='faculty')
 
@@ -110,4 +138,5 @@ def api_students():
     return jsonify({"students": students, "total": total})
 
 if __name__ == '__main__':
+    app.run(debug=True)
     app.run(debug=True)

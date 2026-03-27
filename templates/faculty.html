@@ -4,21 +4,18 @@
 <div class="page-header">
     <h1>Faculty Directory</h1>
     <div style="display:flex;gap:12px;">
-        <button class="btn-outline"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV</button>
-    </div>
-</div>
+        
+      
 
-<!-- Campus Filter -->
-<div class="card" style="margin-bottom:20px;display:flex;align-items:center;gap:12px;padding:14px 20px;">
-    <label style="font-size:.7rem;font-weight:600;color:#64748B;">CAMPUS</label>
-    <form method="GET" style="display:flex;gap:8px;align-items:center;">
-        <select name="campus" class="filter-input" style="padding:9px 12px;min-width:180px;" onchange="this.form.submit()">
-            <option value="">All Campuses</option>
-            {% for key, inst in odoo_instances.items() %}
-            <option value="{{ key }}" {{ 'selected' if campus == key }}>{{ inst.name }}</option>
-            {% endfor %}
-        </select>
-    </form>
+        <button class="btn-outline">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Export CSV
+        </button>
+    </div>
 </div>
 
 <!-- Faculty List -->
@@ -26,38 +23,75 @@
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <div>
             <h3 class="card-title">Institutional Faculty</h3>
-            <p class="card-subtitle">Showing {{ faculty|length }} registered educators{% if campus %} from {{ odoo_instances[campus].name }}{% else %} across all campuses{% endif %}</p>
+            <p class="card-subtitle">
+                Showing {{ faculty|length }} registered educators
+                {% if campus %}
+                    from {{ odoo_instances[campus].name }}
+                {% else %}
+                    across all campuses
+                {% endif %}
+                {% if selected_subject %}
+                    (Filtered by: {{ selected_subject }})
+                {% endif %}
+            </p>
+              <!-- SUBJECT FILTER -->
+        <form method="GET">
+            <select name="subject" class="btn-outline" onchange="this.form.submit()">
+                <option value="">All Subjects</option>
+                {% for subj in all_subjects %}
+                    <option value="{{ subj }}" {% if selected_subject == subj %}selected{% endif %}>
+                        {{ subj }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
         </div>
     </div>
+
     <table class="data-table">
-        <thead><tr>
-            <th>FACULTY MEMBER</th>
-            <th>CNIC</th>
-            <th>SUBJECTS</th>
-            <th>CAMPUS</th>
-        </tr></thead>
+        <thead>
+            <tr>
+                <th>FACULTY MEMBER</th>
+                <th>CNIC</th>
+                <th>SUBJECTS</th>
+                <th>CAMPUS</th>
+            </tr>
+        </thead>
         <tbody>
             {% for f in faculty %}
             <tr>
                 <td>
                     <div class="student-info">
-                        <div class="initials-avatar" style="background:#0F172A;">{{ f.name[:1] if f.name else '?' }}</div>
+                        <div class="initials-avatar" style="background:#0F172A;">
+                            {{ f.name[:1] if f.name else '?' }}
+                        </div>
                         <div>
                             <strong>{{ f.name }}</strong>
                         </div>
                     </div>
                 </td>
-                <td style="font-family:monospace;font-size:.85rem;">{{ f.cnic or '—' }}</td>
+
+                <td style="font-family:monospace;font-size:.85rem;">
+                    {{ f.cnic or '—' }}
+                </td>
+
                 <td>
                     {% if f.subjects %}
                         {% for subj in f.subjects %}
-                        <span class="campus-badge" style="margin:2px;">{{ subj }}</span>
+                            <span class="campus-badge" style="margin:2px;">
+                                {{ subj }}
+                            </span>
                         {% endfor %}
                     {% else %}
                         <span style="color:#94A3B8;">No subjects assigned</span>
                     {% endif %}
                 </td>
-                <td><span class="campus-badge" style="background:#EEF2FF;color:#4338CA;">{{ f.campus_name }}</span></td>
+
+                <td>
+                    <span class="campus-badge" style="background:#EEF2FF;color:#4338CA;">
+                        {{ f.campus_name }}
+                    </span>
+                </td>
             </tr>
             {% else %}
             <tr>
@@ -69,4 +103,5 @@
         </tbody>
     </table>
 </div>
+
 {% endblock %}
