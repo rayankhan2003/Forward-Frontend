@@ -58,36 +58,64 @@ def campuses():
 
 @app.route('/students')
 def students():
-    q      = request.args.get('q', '').lower()
-    page   = request.args.get('page', 1, type=int)
-    campus = request.args.get('campus', '').strip()
+    q       = request.args.get('q', '').lower()
+    page    = request.args.get('page', 1, type=int)
+    campus  = request.args.get('campus', '').strip()
 
-    # Fetch from one campus or all
+    # NEW FILTERS
+    student_class = request.args.get('class', '').strip()
+    gender        = request.args.get('gender', '').strip()
+    status        = request.args.get('status', '').strip()
+
+    # Fetch data
     if campus and campus in api_client.ODOO_INSTANCES:
         all_s = api_client.get_all_odoo_students(campus_filter=campus)
     else:
         all_s = api_client.get_all_odoo_students()
-        campus = ''  # reset invalid values
+        campus = ''
 
-    # search filter
+    # 🔍 SEARCH FILTER
     if q:
-        all_s = [s for s in all_s
-                 if q in s.get('name','').lower()
-                 or q in s.get('father_name','').lower()]
+        all_s = [
+            s for s in all_s
+            if q in s.get('name', '').lower()
+            or q in s.get('father_name', '').lower()
+            or q in str(s.get('roll_no', '')).lower()
+        ]
 
+    # 🎯 CLASS FILTER
+    if student_class:
+        all_s = [s for s in all_s if str(s.get('class', '')).lower() == student_class.lower()]
+
+    # 🎯 GENDER FILTER
+    if gender:
+        all_s = [s for s in all_s if s.get('gender', '').lower() == gender.lower()]
+
+    # 🎯 STATUS FILTER
+    if status:
+        all_s = [s for s in all_s if s.get('status', '').lower() == status.lower()]
+
+    # Pagination
     total    = len(all_s)
     per_page = 10
     start    = (page - 1) * per_page
     paged    = all_s[start:start + per_page]
     pages    = max(1, (total + per_page - 1) // per_page)
 
-    return render_template('students.html',
-                           students=paged, total=total,
-                           page=page, pages=pages,
-                           q=request.args.get('q', ''),
-                           campus=campus,
-                           odoo_instances=api_client.ODOO_INSTANCES,
-                           active_page='students')
+    return render_template(
+        'students.html',
+        students=paged,
+        total=total,
+        page=page,
+        pages=pages,
+        q=request.args.get('q', ''),
+        campus=campus,
+        student_class=student_class,
+        gender=gender,
+        status=status,
+        odoo_instances=api_client.ODOO_INSTANCES,
+        active_page='students'
+    )
 
 @app.route('/faculty')
 def faculty():
