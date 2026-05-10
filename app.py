@@ -1,7 +1,8 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, flash, redirect, url_for
 import api_client
 
 app = Flask(__name__)
+app.secret_key = 'forward-admin-secret-2026'
 
 @app.route('/')
 def dashboard():
@@ -155,9 +156,7 @@ def reports():
                            grade_dist=api_client.get_grade_distribution(),
                            active_page='reports')
 
-@app.route('/settings')
-def settings():
-    return render_template('settings.html', active_page='settings')
+
 
 @app.route('/api/students')
 def api_students():
@@ -166,5 +165,4 @@ def api_students():
     return jsonify({"students": students, "total": total})
 
 if __name__ == '__main__':
-    app.run(debug=True)
     app.run(debug=True)

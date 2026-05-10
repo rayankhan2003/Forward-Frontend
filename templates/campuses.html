@@ -1,59 +1,144 @@
-{% extends "layout.html" %}
-{% block content %}
+{% extends "layout.html" %} {% block content %}
 
 <div class="page-header">
-    <div>
-        <p class="breadcrumb">INSTITUTIONAL REGISTRY</p>
-        <h1>Active Campuses</h1>
-        <p class="page-desc">Overview of regional educational centers, leadership structures, and localized facility management.</p>
-    </div>
+  <div>
+    <p class="breadcrumb">INSTITUTIONAL REGISTRY</p>
+    <h1>Active Campuses</h1>
+    <p class="page-desc">
+      Overview of regional educational centers, leadership structures, and
+      localized facility management.
+    </p>
+  </div>
 </div>
 
 <div class="campus-cards-grid">
-    {% for key, stats in combined_stats.per_campus.items() %}
-    <div class="campus-full-card card">
-        <div class="campus-img-container" style="height:220px;">
-            {% if key == 'boys_school' %}
-            <img src="{{ url_for('static', filename='img/boys-school.jpg') }}" alt="{{ odoo_instances[key].name }}" class="campus-full-img">
-            {% elif key == 'girls_school' %}
-            <img src="{{ url_for('static', filename='img/girls-school.jpg') }}" alt="{{ odoo_instances[key].name }}" class="campus-full-img">
-            {% else %}
-            <img src="{{ url_for('static', filename='img/girls-college.jpg') }}" alt="{{ odoo_instances[key].name }}" class="campus-full-img">
-            {% endif %}
-            <div class="campus-img-overlay" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 20px;">
-                <span class="campus-type-badge" style="background: #3B82F6; color: #fff; text-transform: uppercase; font-size: 0.7rem; padding: 4px 10px; border-radius: 4px; margin-bottom: 8px; display: inline-block;">REGIONAL HUB</span>
-                <h3 class="campus-img-title" style="font-size: 1.5rem; color: #fff; font-weight: 800;">{{ odoo_instances[key].name }}</h3>
-            </div>
-        </div>
-        <div class="campus-full-info" style="padding: 24px;">
-            <!-- Principal Section -->
-            <div style="background: #EFF6FF; border-radius: 8px; padding: 16px; display: flex; align-items: center; gap: 16px; margin-bottom: 24px; border: 1px solid #DBEAFE;">
-                <div style="width: 40px; height: 40px; border-radius: 50%; background: #fff; border: 1px solid #BFDBFE; display: flex; align-items: center; justify-content: center; color: #1D4ED8;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                </div>
-                <div>
-                    <p style="font-size: 0.65rem; font-weight: 700; color: #64748B; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px;">PRINCIPAL</p>
-                    <p style="font-size: 0.95rem; font-weight: 800; color: #0F172A;">
-                        {% if key == 'boys_school' %} Irum Salman
-                        {% elif key == 'girls_school' %} Ms. Sobia Saleem
-                        {% else %}Madam Salma Sarfaraz Khan{% endif %}
-                    </p>
-                </div>
-            </div>
-
-            <div class="campus-detail-row" style="margin-bottom: 20px;">
-                <div class="campus-stat">
-                    <span class="cs-label">TOTAL STUDENTS</span>
-                    <span class="cs-val">{{ stats.total_students }}</span>
-                </div>
-                <div class="campus-stat">
-                    <span class="cs-label">TOTAL TEACHERS</span>
-                    <span class="cs-val">{{ stats.total_teachers }}</span>
-                </div>
-            </div>
-        </div>
+  {% for key, stats in combined_stats.per_campus.items() %}
+  <div class="campus-full-card card">
+    <div class="campus-img-container" style="height: 220px">
+      {% if key == 'boys_school' %}
+      <img
+        src="{{ url_for('static', filename='img/boys-school.jpg') }}"
+        alt="{{ odoo_instances[key].name }}"
+        class="campus-full-img"
+      />
+      {% elif key == 'girls_school' %}
+      <img
+        src="{{ url_for('static', filename='img/girls-school.jpg') }}"
+        alt="{{ odoo_instances[key].name }}"
+        class="campus-full-img"
+      />
+      {% else %}
+      <img
+        src="{{ url_for('static', filename='img/girls-college.jpg') }}"
+        alt="{{ odoo_instances[key].name }}"
+        class="campus-full-img"
+      />
+      {% endif %}
+      <div
+        class="campus-img-overlay"
+        style="
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+          padding: 20px;
+        "
+      >
+        <span
+          class="campus-type-badge"
+          style="
+            background: #3b82f6;
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            display: inline-block;
+          "
+          >REGIONAL HUB</span
+        >
+        <h3
+          class="campus-img-title"
+          style="font-size: 1.5rem; color: #fff; font-weight: 800"
+        >
+          {{ odoo_instances[key].name }}
+        </h3>
+      </div>
     </div>
-    {% endfor %}
-</div>
+    <div class="campus-full-info" style="padding: 24px">
+      <!-- Principal Section -->
+      <div
+        style="
+          background: #eff6ff;
+          border-radius: 8px;
+          padding: 16px;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 24px;
+          border: 1px solid #dbeafe;
+        "
+      >
+        <div
+          style="
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #fff;
+            border: 1px solid #bfdbfe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1d4ed8;
+          "
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </div>
+        <div>
+          <p
+            style="
+              font-size: 0.65rem;
+              font-weight: 700;
+              color: #64748b;
+              letter-spacing: 0.5px;
+              text-transform: uppercase;
+              margin-bottom: 2px;
+            "
+          >
+            PRINCIPAL
+          </p>
+          <p style="font-size: 0.95rem; font-weight: 800; color: #0f172a">
+            {% if key == 'boys_school' %} Irum Salman {% elif key ==
+            'girls_school' %} Madam Salma Sarfaraz Khan {% else %}Ms. Sobia
+            Saleem{% endif %}
+          </p>
+          iv>
 
-{% endblock %}
+          <div class="campus-detail-row" style="margin-bottom: 20px">
+            <div class="campus-stat">
+              <span class="cs-label">TOTAL STUDENTS</span>
+              <span class="cs-val">{{ stats.total_students }}</span>
+            </div>
+            <div class="campus-stat">
+              <span class="cs-label">TOTAL TEACHERS</span>
+              <span class="cs-val">{{ stats.total_teachers }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% endblock %}
+  </div>
+</div>

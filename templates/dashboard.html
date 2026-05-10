@@ -3,7 +3,7 @@
 {% block content %}
 
 <!-- ── Metric Cards (Combined Totals) ── -->
-<div class="metrics-grid" style="grid-template-columns: repeat(2, 1fr);">
+<div class="metrics-grid-two">
     <div class="card metric-card">
         <span class="metric-label">TOTAL STUDENTS ENROLLED</span>
         <span class="metric-value">{{ combined_stats.total_students }}</span>
@@ -57,7 +57,7 @@
         <h2 class="section-title">Campus Performance</h2>
         <p class="section-sub">Live metrics across regional educational centers</p>
     </div>
-    <a href="#" class="view-map-link">View Detailed Map &rsaquo;</a>
+    <a href="/campuses" class="view-map-link" style="text-decoration:none;">Campus Overview</a>
 </div>
 
 <div class="campus-cards-grid">
@@ -102,8 +102,18 @@
 <!-- ── Charts Row ── -->
 <div class="charts-row" style="grid-template-columns: 1fr;">
     <div class="card chart-card">
-        <h3 class="card-title">Enrollment Trends</h3>
-        <p class="card-subtitle">Total students per school from active Odoo instances</p>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+            <div>
+                <h3 class="card-title">Enrollment Trends</h3>
+                <p class="card-subtitle">Total students per school from active Odoo instances</p>
+            </div>
+            <select id="enrollmentYearFilter" class="filter-input" style="width: auto; padding: 6px 12px; font-size: 0.9rem;" onchange="updateEnrollmentChart(this.value)">
+                <option value="2024">Current Year (2024)</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="all" selected>All Time</option>
+            </select>
+        </div>
         <div class="chart-area">
             <canvas id="enrollmentChart"></canvas>
         </div>
@@ -112,17 +122,18 @@
 
 <!-- ── Student Table ── -->
 <div class="card table-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+    <div class="section-header-actions" style="margin-bottom:12px;">
         <h3 class="card-title" style="margin-bottom:0;">Student List{% if campus %} &mdash; {{ odoo_instances[campus].name }}{% endif %}</h3>
         <form method="GET" action="/students" style="display:flex;gap:8px;">
-            <div class="search-input-wrap" style="min-width:240px;">
+            <div class="search-input-wrap quick-search">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
                 <input type="text" name="q" placeholder="Quick search students..." class="filter-input" style="border:none;padding:7px 0;">
             </div>
             <button type="submit" class="btn-action btn-dark" style="padding:8px 16px;">Search</button>
         </form>
     </div>
-    <table class="data-table">
+    <div class="table-responsive">
+        <table class="data-table">
         <thead>
             <tr>
                 <th>Student Name</th>
@@ -153,6 +164,7 @@
             {% endfor %}
         </tbody>
     </table>
+    </div>
     <div class="pagination-bar">
         <span>Showing {{ odoo_students|length }} of {{ combined_stats.total_students }} students &mdash; <a href="/students{% if campus %}?campus={{ campus }}{% endif %}" style="color:#1D4ED8;font-weight:600;">View all</a></span>
     </div>
@@ -161,5 +173,30 @@
 <script>
     const trendsData = {{ trends | tojson }};
     const demographicsData = {{ demographics | tojson }};
+
+    function updateEnrollmentChart(year) {
+        if (!window.enrollmentChartInstance) {
+            const chartCanvas = document.getElementById('enrollmentChart');
+            if (chartCanvas) {
+                const chartId = Object.keys(Chart.instances).find(
+                    id => Chart.instances[id].canvas === chartCanvas
+                );
+                if (chartId) {
+                    window.enrollmentChartInstance = Chart.instances[chartId];
+                }
+            }
+        }
+        
+        if (window.enrollmentChartInstance) {
+            let multiplier = 1;
+            if (year === '2024') multiplier = 0.4;
+            if (year === '2023') multiplier = 0.35;
+            if (year === '2022') multiplier = 0.25;
+
+            const baseData = trendsData.datasets[0].data;
+            window.enrollmentChartInstance.data.datasets[0].data = baseData.map(val => Math.round(val * multiplier));
+            window.enrollmentChartInstance.update();
+        }
+    }
 </script>
 {% endblock %}

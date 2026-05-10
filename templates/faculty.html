@@ -1,107 +1,146 @@
-{% extends "layout.html" %}
-{% block content %}
+{% extends "layout.html" %} {% block content %}
 
 <div class="page-header">
-    <h1>Faculty Directory</h1>
-    <div style="display:flex;gap:12px;">
-        
-      
-
-        <button class="btn-outline">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            Export CSV
-        </button>
-    </div>
+  <h1>Faculty Members</h1>
+  <div style="display: flex; gap: 12px">
+    <button class="btn-outline" onclick="exportFacultyCSV()">
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </svg>
+      Export CSV
+    </button>
+  </div>
 </div>
 
 <!-- Faculty List -->
 <div class="card table-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <div>
-            <h3 class="card-title">Institutional Faculty</h3>
-            <p class="card-subtitle">
-                Showing {{ faculty|length }} registered educators
-                {% if campus %}
-                    from {{ odoo_instances[campus].name }}
-                {% else %}
-                    across all campuses
-                {% endif %}
-                {% if selected_subject %}
-                    (Filtered by: {{ selected_subject }})
-                {% endif %}
-            </p>
-              <!-- SUBJECT FILTER -->
-        <form method="GET">
-            <select name="subject" class="btn-outline" onchange="this.form.submit()">
-                <option value="">All Subjects</option>
-                {% for subj in all_subjects %}
-                    <option value="{{ subj }}" {% if selected_subject == subj %}selected{% endif %}>
-                        {{ subj }}
-                    </option>
-                {% endfor %}
-            </select>
-        </form>
-        </div>
+  <div class="page-header-actions" style="margin-bottom: 16px">
+    <div>
+      <h3 class="card-title">Institutional Faculty</h3>
+      <p class="card-subtitle">
+        Showing {{ faculty|length }} registered educators {% if campus %} from
+        {{ odoo_instances[campus].name }} {% else %} across all campuses {%
+        endif %} {% if selected_subject %} (Filtered by: {{ selected_subject }})
+        {% endif %}
+      </p>
+      <!-- SUBJECT FILTER -->
+      <form method="GET">
+        <select
+          name="subject"
+          class="btn-outline"
+          onchange="this.form.submit()"
+        >
+          <option value="">All Subjects</option>
+          {% for subj in all_subjects %}
+          <option value="{{ subj }}" {% if selected_subject == subj %}selected{% endif %}>
+            {{ subj }}
+          </option>
+          {% endfor %}
+        </select>
+      </form>
     </div>
+  </div>
 
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>FACULTY MEMBER</th>
-                <th>CNIC</th>
-                <th>SUBJECTS</th>
-                <th>CAMPUS</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for f in faculty %}
-            <tr>
-                <td>
-                    <div class="student-info">
-                        <div class="initials-avatar" style="background:#0F172A;">
-                            {{ f.name[:1] if f.name else '?' }}
-                        </div>
-                        <div>
-                            <strong>{{ f.name }}</strong>
-                        </div>
-                    </div>
-                </td>
+  <div class="table-responsive">
+    <table class="data-table" id="facultyTable">
+      <thead>
+        <tr>
+          <th>FACULTY MEMBER</th>
+          <th>CNIC</th>
+          <th>SUBJECTS</th>
+          <th>CAMPUS</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in faculty %}
+        <tr>
+          <td>
+            <div class="student-info">
+              <div class="initials-avatar" style="background: #0f172a">
+                {{ f.name[:1] if f.name else '?' }}
+              </div>
+              <div>
+                <strong>{{ f.name }}</strong>
+              </div>
+            </div>
+          </td>
 
-                <td style="font-family:monospace;font-size:.85rem;">
-                    {{ f.cnic or '—' }}
-                </td>
+          <td style="font-family: monospace; font-size: 0.85rem">
+            {{ f.cnic or '—' }}
+          </td>
 
-                <td>
-                    {% if f.subjects %}
-                        {% for subj in f.subjects %}
-                            <span class="campus-badge" style="margin:2px;">
-                                {{ subj }}
-                            </span>
-                        {% endfor %}
-                    {% else %}
-                        <span style="color:#94A3B8;">No subjects assigned</span>
-                    {% endif %}
-                </td>
+          <td>
+            {% if f.subjects %} {% for subj in f.subjects %}
+            <span class="campus-badge" style="margin: 2px"> {{ subj }} </span>
+            {% endfor %} {% else %}
+            <span style="color: #94a3b8">No subjects assigned</span>
+            {% endif %}
+          </td>
 
-                <td>
-                    <span class="campus-badge" style="background:#EEF2FF;color:#4338CA;">
-                        {{ f.campus_name }}
-                    </span>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="4" style="text-align:center;padding:40px;color:#64748B;">
-                    No faculty members found in the directory.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
+          <td>
+            <span
+              class="campus-badge"
+              style="background: #eef2ff; color: #4338ca"
+            >
+              {{ f.campus_name }}
+            </span>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td
+            colspan="4"
+            style="text-align: center; padding: 40px; color: #64748b"
+          >
+            No faculty members found in the directory.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
+  </div>
 </div>
 
 {% endblock %}
+
+<script>
+  function exportFacultyCSV() {
+    const table = document.getElementById("facultyTable");
+    if (!table) return;
+    const rows = table.querySelectorAll("tr");
+    const csv = [];
+    rows.forEach((row) => {
+      const cols = row.querySelectorAll("th, td");
+      const rowData = [];
+      cols.forEach((col) => {
+        // Get clean text, collapse whitespace
+        let text = col.innerText
+          .replace(/\s+/g, " ")
+          .trim()
+          .replace(/"/g, '""');
+        rowData.push('"' + text + '"');
+      });
+      csv.push(rowData.join(","));
+    });
+    const blob = new Blob([csv.join("\n")], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "faculty_directory.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+</script>
