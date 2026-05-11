@@ -13,7 +13,8 @@
 
 <div class="campus-cards-grid">
   {% for key, stats in combined_stats.per_campus.items() %}
-  <div class="campus-full-card card">
+  <a href="/?campus={{ key }}" style="text-decoration: none; color: inherit; display: block;">
+  <div class="campus-full-card card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
     <div class="campus-img-container" style="height: 220px">
       {% if key == 'boys_school' %}
       <img
@@ -117,12 +118,18 @@
           >
             PRINCIPAL
           </p>
-          <p style="font-size: 0.95rem; font-weight: 800; color: #0f172a">
+          <p
+            style="
+              font-size: 0.95rem;
+              font-weight: 800;
+              color: #0f172a;
+              margin-bottom: 10px;
+            "
+          >
             {% if key == 'boys_school' %} Irum Salman {% elif key ==
             'girls_school' %} Madam Salma Sarfaraz Khan {% else %}Ms. Sobia
             Saleem{% endif %}
           </p>
-          iv>
 
           <div class="campus-detail-row" style="margin-bottom: 20px">
             <div class="campus-stat">
@@ -136,9 +143,10 @@
           </div>
         </div>
       </div>
-      {% endfor %}
     </div>
-
-    {% endblock %}
   </div>
+  </a>
+  {% endfor %}
 </div>
+
+{% endblock %}

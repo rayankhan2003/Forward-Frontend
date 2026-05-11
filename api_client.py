@@ -12,21 +12,20 @@ API_BASE_URL = "https://api.yourwebsite.com/v1"
 ODOO_INSTANCES = {
     "boys_school": {
         "name": "Boys School",
-        "url": os.getenv("ODOO_URL_BOYS", "http://localhost:8069"),
-        "api_key": os.getenv("ODOO_KEY_BOYS", "FGC-DASHBOARD-SECRET-2026"),
+        "url": "http://182.180.50.23:8071",
+        "api_key": "FGC-DASHBOARD-SECRET-2026",
     },
     "girls_school": {
         "name": "Girls School",
-        "url": os.getenv("ODOO_URL_GIRLS", "http://localhost:8069"),
-        "api_key": os.getenv("ODOO_KEY_GIRLS", "FGC-DASHBOARD-SECRET-2026"),
+        "url": "http://182.180.50.23:8071",
+        "api_key": "FGC-DASHBOARD-SECRET-2026",
     },
     "girls_college": {
         "name": "Girls College",
-        "url": os.getenv("ODOO_URL_COLLEGE", "http://localhost:8069"),
-        "api_key": os.getenv("ODOO_KEY_COLLEGE", "FGC-DASHBOARD-SECRET-2026"),
+        "url": "http://182.180.50.23:8071",
+        "api_key": "FGC-DASHBOARD-SECRET-2026",
     },
 }
-
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -254,3 +253,83 @@ def get_grade_distribution():
             "borderRadius": 6
         }]
     }
+
+
+# ── Real Report Data (computed from Odoo) ────────
+def get_real_report_metrics():
+    """Compute report KPI cards from actual Odoo data."""
+    combined = get_combined_odoo_stats()
+    total_s = combined['total_students']
+    total_t = combined['total_teachers']
+
+    all_students = get_all_odoo_students()
+    classes = set(str(s.get('class', '')).strip() for s in all_students if s.get('class'))
+
+    ratio = round(total_s / total_t, 1) if total_t else 0
+
+    return [
+        {"label": "TOTAL ENROLLED STUDENTS", "value": f"{total_s:,}", "badge": None, "badge_type": ""},
+        {"label": "TOTAL FACULTY MEMBERS",   "value": str(total_t),   "badge": None, "badge_type": ""},
+        {"label": "STUDENT-TEACHER RATIO",   "value": f"{ratio}:1",   "badge": None, "badge_type": ""},
+        {"label": "ACTIVE CLASSES",          "value": str(len(classes)), "badge": None, "badge_type": ""},
+    ]
+
+
+def get_class_distribution():
+    """Count students grouped by program level + year from actual Odoo data.
+    e.g. 'F.Sc I [Daffodil]-2025-2026' → 'F.Sc I — 2025-2026'
+    """
+    import re
+    all_students = get_all_odoo_students()
+    group_counts = {}
+    for s in all_students:
+        c = s.get('class', '')
+        if not c:
+            continue
+        # Extract program level (before '[') and year (after ']-')
+        match = re.match(r'^(.*?)\s*\[.*?\]-?(.*)$', c)
+        if match:
+            program = match.group(1).strip()
+            year = match.group(2).strip()
+            group_key = f"{program} — {year}" if year else program
+        else:
+            group_key = c
+        group_counts[group_key] = group_counts.get(group_key, 0) + 1
+
+    sorted_groups = sorted(group_counts.items())
+    colors = ['#3B82F6', '#EC4899', '#8B5CF6', '#F59E0B', '#10B981',
+              '#EF4444', '#6366F1', '#14B8A6', '#F97316', '#22c55e']
+
+    return {
+        "labels": [g[0] for g in sorted_groups],
+        "datasets": [{
+            "label": "Students",
+            "data": [g[1] for g in sorted_groups],
+            "backgroundColor": [colors[i % len(colors)] for i in range(len(sorted_groups))],
+            "borderRadius": 6
+        }]
+    }
+
+
+def get_subject_distribution():
+    """Count teachers per subject from actual Odoo data."""
+    all_teachers = get_all_odoo_teachers()
+    subj_counts = {}
+    for t in all_teachers:
+        for s in t.get('subjects', []):
+            subj_counts[s] = subj_counts.get(s, 0) + 1
+
+    sorted_subjects = sorted(subj_counts.items(), key=lambda x: x[1], reverse=True)
+    colors = ['#3B82F6', '#22c55e', '#8B5CF6', '#F59E0B', '#EC4899',
+              '#EF4444', '#14B8A6', '#F97316', '#6366F1', '#10B981']
+
+    return {
+        "labels": [s[0] for s in sorted_subjects],
+        "datasets": [{
+            "label": "Teachers",
+            "data": [s[1] for s in sorted_subjects],
+            "backgroundColor": [colors[i % len(colors)] for i in range(len(sorted_subjects))],
+            "borderRadius": 6
+        }]
+    }
+

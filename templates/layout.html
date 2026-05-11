@@ -71,12 +71,15 @@
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                 </button>
                
+               
+                {% if active_page in ['dashboard', 'students', 'faculty'] %}
                 <nav class="campus-tabs">
                     <a href="?campus=" class="campus-tab active" data-campus="all">All Campuses</a>
                     <a href="?campus=boys_school" class="campus-tab" data-campus="boys_school">Boys School</a>
                     <a href="?campus=girls_school" class="campus-tab" data-campus="girls_school">Girls School</a>
                     <a href="?campus=girls_college" class="campus-tab" data-campus="girls_college">Girls College</a>
                 </nav>
+                {% endif %}
             </div>
             <div class="topbar-right">
                 <div class="user-profile">
@@ -98,7 +101,7 @@
 
 <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
 <script>
-    // Campus tab switching — highlights active tab based on URL ?campus= param
+    // Campus tab switching — highlights active tab and preserves query params
     (function() {
         const params = new URLSearchParams(window.location.search);
         const currentCampus = params.get('campus') || '';
@@ -106,6 +109,21 @@
             tab.classList.remove('active');
             const tabCampus = tab.dataset.campus === 'all' ? '' : tab.dataset.campus;
             if (tabCampus === currentCampus) tab.classList.add('active');
+
+            // Click handler: preserve existing query params, only change campus
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                const newParams = new URLSearchParams(window.location.search);
+                if (tabCampus) {
+                    newParams.set('campus', tabCampus);
+                } else {
+                    newParams.delete('campus');
+                }
+                // Reset page to 1 when switching campus
+                newParams.delete('page');
+                const qs = newParams.toString();
+                window.location.href = window.location.pathname + (qs ? '?' + qs : '');
+            });
         });
         const sel = document.getElementById('school-select');
         if (sel) sel.value = currentCampus;

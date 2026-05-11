@@ -65,8 +65,6 @@ def students():
 
     # NEW FILTERS
     student_class = request.args.get('class', '').strip()
-    gender        = request.args.get('gender', '').strip()
-    status        = request.args.get('status', '').strip()
 
     # Fetch data
     if campus and campus in api_client.ODOO_INSTANCES:
@@ -75,26 +73,26 @@ def students():
         all_s = api_client.get_all_odoo_students()
         campus = ''
 
+    # Extract unique class names from the data BEFORE any filtering
+    all_classes = sorted(set(
+        str(s.get('class', '')).strip()
+        for s in all_s
+        if s.get('class', '')
+    ))
+
     # 🔍 SEARCH FILTER
     if q:
         all_s = [
             s for s in all_s
             if q in s.get('name', '').lower()
             or q in s.get('father_name', '').lower()
-            or q in str(s.get('roll_no', '')).lower()
+            or q in str(s.get('id', '')).lower()
         ]
 
     # 🎯 CLASS FILTER
     if student_class:
         all_s = [s for s in all_s if str(s.get('class', '')).lower() == student_class.lower()]
 
-    # 🎯 GENDER FILTER
-    if gender:
-        all_s = [s for s in all_s if s.get('gender', '').lower() == gender.lower()]
-
-    # 🎯 STATUS FILTER
-    if status:
-        all_s = [s for s in all_s if s.get('status', '').lower() == status.lower()]
 
     # Pagination
     total    = len(all_s)
@@ -112,8 +110,7 @@ def students():
         q=request.args.get('q', ''),
         campus=campus,
         student_class=student_class,
-        gender=gender,
-        status=status,
+        all_classes=all_classes,
         odoo_instances=api_client.ODOO_INSTANCES,
         active_page='students'
     )
@@ -151,9 +148,9 @@ def faculty():
 @app.route('/reports')
 def reports():
     return render_template('reports.html',
-                           report_metrics=api_client.get_report_metrics(),
-                           attendance_trend=api_client.get_attendance_trend(),
-                           grade_dist=api_client.get_grade_distribution(),
+                           report_metrics=api_client.get_real_report_metrics(),
+                           class_dist=api_client.get_class_distribution(),
+                           subject_dist=api_client.get_subject_distribution(),
                            active_page='reports')
 
 

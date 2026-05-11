@@ -12,9 +12,7 @@
     </p>
   </div>
 
-  <div style="display:flex; gap:12px;">
-    <button class="btn-outline" onclick="exportStudentsCSV()">Export to CSV</button>
-  </div>
+  <div style="display:flex; gap:12px;"></div>
 </div>
 
 <!-- FILTERS -->
@@ -27,7 +25,7 @@
       <label class="students-filter-label">SEARCH</label>
       <div class="search-input-wrap">
         <input type="text" name="q" value="{{ q }}"
-          placeholder="Search by name, father name, or roll no..."
+          placeholder="Search by name, father name, or ID..."
           class="filter-input"/>
       </div>
     </div>
@@ -37,31 +35,13 @@
       <label class="students-filter-label">CLASS</label>
       <select name="class" class="filter-input">
         <option value="">All</option>
-        <option value="1" {{ 'selected' if student_class=='1' }}>Class 1</option>
-        <option value="2" {{ 'selected' if student_class=='2' }}>Class 2</option>
-        <option value="3" {{ 'selected' if student_class=='3' }}>Class 3</option>
+        {% for cls in all_classes %}
+        <option value="{{ cls }}" {{ 'selected' if student_class == cls }}>{{ cls }}</option>
+        {% endfor %}
       </select>
     </div>
 
-    <!-- GENDER -->
-    <div class="students-filter-item">
-      <label class="students-filter-label">GENDER</label>
-      <select name="gender" class="filter-input">
-        <option value="">All</option>
-        <option value="male" {{ 'selected' if gender=='male' }}>Male</option>
-        <option value="female" {{ 'selected' if gender=='female' }}>Female</option>
-      </select>
-    </div>
 
-    <!-- STATUS -->
-    <div class="students-filter-item">
-      <label class="students-filter-label">STATUS</label>
-      <select name="status" class="filter-input">
-        <option value="">All</option>
-        <option value="active" {{ 'selected' if status=='active' }}>Active</option>
-        <option value="inactive" {{ 'selected' if status=='inactive' }}>Inactive</option>
-      </select>
-    </div>
 
     <!-- CAMPUS -->
     <div class="students-filter-item">
@@ -90,10 +70,10 @@
     <table class="data-table" id="studentsTable">
     <thead>
       <tr>
+        <th>ID</th>
         <th>STUDENT NAME</th>
         <th>FATHER NAME</th>
         <th>CLASS</th>
-        <th>ROLL NO</th>
         <th>CAMPUS</th>
       </tr>
     </thead>
@@ -101,10 +81,10 @@
     <tbody>
       {% for student in students %}
       <tr>
+        <td>{{ student.id }}</td>
         <td><strong>{{ student.name }}</strong></td>
         <td>{{ student.father_name }}</td>
         <td>{{ student['class'] }}</td>
-        <td>{{ student.roll_no }}</td>
         <td>{{ student.campus_name }}</td>
       </tr>
       {% else %}
@@ -127,12 +107,12 @@
     <div class="page-controls">
 
       {% if page > 1 %}
-      <a href="?q={{ q }}&campus={{ campus }}&class={{ student_class }}&gender={{ gender }}&status={{ status }}&page={{ page-1 }}" class="page-btn">&lsaquo;</a>
+      <a href="?q={{ q }}&campus={{ campus }}&class={{ student_class }}&page={{ page-1 }}" class="page-btn">&lsaquo;</a>
       {% endif %}
 
       {% for p in range(1, pages+1) %}
         {% if p == 1 or p == pages or (p >= page - 2 and p <= page + 2) %}
-        <a href="?q={{ q }}&campus={{ campus }}&class={{ student_class }}&gender={{ gender }}&status={{ status }}&page={{ p }}"
+        <a href="?q={{ q }}&campus={{ campus }}&class={{ student_class }}&page={{ p }}"
            class="page-btn {{ 'active-page' if p == page }}">
            {{ p }}
         </a>
@@ -144,7 +124,7 @@
       {% endfor %}
 
       {% if page < pages %}
-      <a href="?q={{ q }}&campus={{ campus }}&class={{ student_class }}&gender={{ gender }}&status={{ status }}&page={{ page+1 }}" class="page-btn">&rsaquo;</a>
+      <a href="?q={{ q }}&campus={{ campus }}&class={{ student_class }}&page={{ page+1 }}" class="page-btn">&rsaquo;</a>
       {% endif %}
 
     </div>
@@ -152,30 +132,3 @@
 </div>
 
 {% endblock %}
-
-<script>
-function exportStudentsCSV() {
-    const table = document.getElementById('studentsTable');
-    if (!table) return;
-    const rows = table.querySelectorAll('tr');
-    const csv = [];
-    rows.forEach(row => {
-        const cols = row.querySelectorAll('th, td');
-        const rowData = [];
-        cols.forEach(col => {
-            let text = col.innerText.replace(/\s+/g, ' ').trim().replace(/"/g, '""');
-            rowData.push('"' + text + '"');
-        });
-        csv.push(rowData.join(','));
-    });
-    const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'students_export.csv';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-</script>

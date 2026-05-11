@@ -64,38 +64,37 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    /* ── Reports: Attendance Trends line chart ── */
-    const attCtx = document.getElementById('attendanceChart');
-    if (attCtx && typeof attendanceData !== 'undefined') {
-        new Chart(attCtx.getContext('2d'), {
-            type: 'line',
-            data: attendanceData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { beginAtZero: false, min: 75, max: 100, grid: { color: '#E2E8F0' }, ticks: { font: { family: 'Inter', size: 11 } } },
-                    x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11 } } }
-                },
-                plugins: {
-                    legend: { position: 'top', align: 'end', labels: { usePointStyle: true, pointStyle: 'circle', padding: 20, font: { family: 'Inter', size: 12, weight: '600' } } }
-                }
-            }
-        });
-    }
-
-    /* ── Reports: Grade Distribution bar chart ── */
-    const gradeCtx = document.getElementById('gradeChart');
-    if (gradeCtx && typeof gradeData !== 'undefined') {
-        new Chart(gradeCtx.getContext('2d'), {
+    /* ── Reports: Students per Class bar chart ── */
+    const classCtx = document.getElementById('classDistChart');
+    if (classCtx && typeof classDistData !== 'undefined') {
+        new Chart(classCtx.getContext('2d'), {
             type: 'bar',
-            data: gradeData,
+            data: classDistData,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
                     y: { beginAtZero: true, grid: { color: '#E2E8F0' }, ticks: { font: { family: 'Inter', size: 11 } } },
-                    x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 12, weight: '700' }, color: '#0F172A' } }
+                    x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#0F172A' } }
+                },
+                plugins: { legend: { display: false } },
+                barPercentage: 0.5
+            }
+        });
+    }
+
+    /* ── Reports: Teacher Subject Distribution bar chart ── */
+    const subjCtx = document.getElementById('subjectDistChart');
+    if (subjCtx && typeof subjectDistData !== 'undefined') {
+        new Chart(subjCtx.getContext('2d'), {
+            type: 'bar',
+            data: subjectDistData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#E2E8F0' }, ticks: { font: { family: 'Inter', size: 11 } } },
+                    x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10, weight: '600' }, color: '#0F172A' } }
                 },
                 plugins: { legend: { display: false } },
                 barPercentage: 0.55

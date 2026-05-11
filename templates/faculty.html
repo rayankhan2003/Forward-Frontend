@@ -2,23 +2,6 @@
 
 <div class="page-header">
   <h1>Faculty Members</h1>
-  <div style="display: flex; gap: 12px">
-    <button class="btn-outline" onclick="exportFacultyCSV()">
-      <svg
-        width="15"
-        height="15"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-        <polyline points="7 10 12 15 17 10" />
-        <line x1="12" y1="15" x2="12" y2="3" />
-      </svg>
-      Export CSV
-    </button>
-  </div>
 </div>
 
 <!-- Faculty List -->
@@ -34,6 +17,7 @@
       </p>
       <!-- SUBJECT FILTER -->
       <form method="GET">
+        <input type="hidden" name="campus" value="{{ campus }}">
         <select
           name="subject"
           class="btn-outline"
@@ -112,35 +96,3 @@
 
 {% endblock %}
 
-<script>
-  function exportFacultyCSV() {
-    const table = document.getElementById("facultyTable");
-    if (!table) return;
-    const rows = table.querySelectorAll("tr");
-    const csv = [];
-    rows.forEach((row) => {
-      const cols = row.querySelectorAll("th, td");
-      const rowData = [];
-      cols.forEach((col) => {
-        // Get clean text, collapse whitespace
-        let text = col.innerText
-          .replace(/\s+/g, " ")
-          .trim()
-          .replace(/"/g, '""');
-        rowData.push('"' + text + '"');
-      });
-      csv.push(rowData.join(","));
-    });
-    const blob = new Blob([csv.join("\n")], {
-      type: "text/csv;charset=utf-8;",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "faculty_directory.csv";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-</script>
