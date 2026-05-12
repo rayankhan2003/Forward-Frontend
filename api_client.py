@@ -10,11 +10,11 @@ API_BASE_URL = "https://api.yourwebsite.com/v1"
 # For testing, all three point to the same server.
 # In production, change each URL to the real Odoo server for that campus.
 ODOO_INSTANCES = {
-    "boys_school": {
+     "boys_school": {
         "name": "Boys School",
-        "url": "http://182.180.50.23:8071",
-        "api_key": "FGC-DASHBOARD-SECRET-2026",
-    },
+        "url": "http://127.0.0.1:8072",
+        "db": "forward_boys",
+        "api_key": "FGC-DASHBOARD-SECRET-2026",},
     "girls_school": {
         "name": "Girls School",
         "url": "http://182.180.50.23:8071",
@@ -43,7 +43,8 @@ def _odoo_request(instance_key, path):
     if not inst:
         logger.error(f"Unknown Odoo instance: {instance_key}")
         return None
-    url = f"{inst['url']}{path}"
+    db_param = f"?db={inst['db']}" if inst.get('db') else ""
+    url = f"{inst['url']}{path}{db_param}"
     try:
         resp = requests.get(url, headers={"X-API-KEY": inst["api_key"]}, timeout=10)
         resp.raise_for_status()
