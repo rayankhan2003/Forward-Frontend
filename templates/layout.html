@@ -55,6 +55,41 @@
                 </li>
 
             </ul>
+
+            <div class="sidebar-divider" style="margin: 20px 0; border-top: 1px solid #1E293B;"></div>
+            <p style="padding: 0 20px; font-size: 0.65rem; font-weight: 700; color: #64748B; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 10px;">EXECUTIVE ANALYTICS</p>
+            <ul>
+                <li class="{{ 'active' if active_page == 'executive_analytics' else '' }}">
+                    <a href="/executive-analytics">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        EXECUTIVE ANALYTICS
+                    </a>
+                </li>
+                <li class="{{ 'active' if active_page == 'revenue' else '' }}">
+                    <a href="/revenue">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                        REVENUE ANALYTICS
+                    </a>
+                </li>
+                <li class="{{ 'active' if active_page == 'profit_loss' else '' }}">
+                    <a href="/profit-loss">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
+                        PROFIT & LOSS
+                    </a>
+                </li>
+                <li class="{{ 'active' if active_page == 'defaulters' else '' }}">
+                    <a href="/defaulters">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        DEFAULTERS
+                    </a>
+                </li>
+                <li class="{{ 'active' if active_page == 'campus_performance' else '' }}">
+                    <a href="/campus-performance">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                        CAMPUS PERFORMANCE
+                    </a>
+                </li>
+            </ul>
         </nav>
         <div class="sidebar-footer">
             <a href="/reports" class="btn btn-primary" style="text-align:center;text-decoration:none;display:block;">+ View Reports</a>

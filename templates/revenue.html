@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <p class="breadcrumb">EXECUTIVE ANALYTICS &rsaquo; <strong>REVENUE ANALYTICS</strong></p>
+        <h1>Revenue Trends</h1>
+        <p class="page-desc">Revenue and collection performance overview</p>
+    </div>
+</div>
+
+<div class="charts-row" style="margin-top:20px;">
+    <div class="card chart-card">
+        <h3 class="card-title">Billed vs Collected Revenue</h3>
+        <p class="card-subtitle">Monthly revenue trends for the current academic year</p>
+        <div class="chart-area" style="height: 400px;">
+            <canvas id="revenueTrendsPageChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    const revenueTrendsData = {{ trends | tojson }};
+    document.addEventListener('DOMContentLoaded', function () {
+        const revCtx = document.getElementById('revenueTrendsPageChart');
+        if (revCtx && typeof revenueTrendsData !== 'undefined') {
+            new Chart(revCtx.getContext('2d'), {
+                type: 'line',
+                data: revenueTrendsData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#E2E8F0', drawBorder: false } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { position: 'top', align: 'end' }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

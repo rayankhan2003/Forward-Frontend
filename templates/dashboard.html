@@ -2,6 +2,40 @@
 
 {% block content %}
 
+<!-- ── Executive KPIs ── -->
+<div class="section-header" style="margin-bottom:12px;">
+    <div>
+        <h2 class="section-title">Executive Overview</h2>
+        <p class="section-sub">Real-time financial performance metrics</p>
+    </div>
+</div>
+<div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 30px;">
+    <div class="card metric-card" style="border-top: 4px solid #10B981;">
+        <span class="metric-label">TOTAL REVENUE</span>
+        <span class="metric-value">{{ finance_kpis.total_revenue }}</span>
+    </div>
+    <div class="card metric-card" style="border-top: 4px solid #3B82F6;">
+        <span class="metric-label">MONTHLY REVENUE</span>
+        <span class="metric-value">{{ finance_kpis.monthly_revenue }}</span>
+    </div>
+    <div class="card metric-card" style="border-top: 4px solid #8B5CF6;">
+        <span class="metric-label">FEE RECOVERY</span>
+        <span class="metric-value">{{ finance_kpis.fee_recovery_percent }}%</span>
+    </div>
+    <div class="card metric-card" style="border-top: 4px solid #F59E0B;">
+        <span class="metric-label">OUTSTANDING FEES</span>
+        <span class="metric-value">{{ finance_kpis.outstanding_fees }}</span>
+    </div>
+    <div class="card metric-card" style="border-top: 4px solid #EC4899;">
+        <span class="metric-label">NET PROFIT/LOSS</span>
+        <span class="metric-value">{{ finance_kpis.net_profit_loss }}</span>
+    </div>
+    <div class="card metric-card" style="border-top: 4px solid #EF4444;">
+        <span class="metric-label">TOTAL DEFAULTERS</span>
+        <span class="metric-value">{{ finance_kpis.total_defaulters }}</span>
+    </div>
+</div>
+
 <!-- ── Metric Cards (Combined Totals) ── -->
 <div class="metrics-grid-two">
     <div class="card metric-card">
@@ -25,8 +59,8 @@
 <!-- ── Per-Campus Stats ── -->
 <div class="section-header" style="margin-top:28px;">
     <div>
-        <h2 class="section-title">{% if campus %}Campus Stats{% else %}Per-Campus Stats{% endif %}</h2>
-        <p class="section-sub">Live counts from {% if campus %}{{ odoo_instances[campus].name }}{% else %}each Odoo ERP instance{% endif %}</p>
+        <h2 class="section-title">Campus Overview</h2>
+        <p class="section-sub">Operational data across all campuses</p>
     </div>
 </div>
 <div class="metrics-grid">
@@ -45,7 +79,7 @@
         </div>
         <span class="metric-sub positive" style="margin-top:8px;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
-            Live from Odoo &mdash; {{ odoo_instances[key].name }}
+            Live data &mdash; {{ odoo_instances[key].name }}
         </span>
     </div>
     {% endfor %}
@@ -55,7 +89,7 @@
 <div class="section-header">
     <div>
         <h2 class="section-title">Campus Performance</h2>
-        <p class="section-sub">Live metrics across regional educational centers</p>
+        <p class="section-sub">Operational and financial performance across campuses</p>
     </div>
     <a href="/campuses" class="view-map-link" style="text-decoration:none;">Campus Overview</a>
 </div>
@@ -100,12 +134,12 @@
 </div>
 
 <!-- ── Charts Row ── -->
-<div class="charts-row" style="grid-template-columns: 1fr;">
+<div class="charts-row">
     <div class="card chart-card">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
             <div>
                 <h3 class="card-title">Enrollment Trends</h3>
-                <p class="card-subtitle">Total students per school from active Odoo instances</p>
+                <p class="card-subtitle">Total students per school across all active campuses</p>
             </div>
             <select id="enrollmentYearFilter" class="filter-input" style="width: auto; padding: 6px 12px; font-size: 0.9rem;" onchange="updateEnrollmentChart(this.value)">
                 <option value="2024">Current Year (2024)</option>
@@ -118,12 +152,20 @@
             <canvas id="enrollmentChart"></canvas>
         </div>
     </div>
+    
+    <div class="card chart-card">
+        <h3 class="card-title">Revenue Trends</h3>
+        <p class="card-subtitle">Billed vs Collected Revenue</p>
+        <div class="chart-area">
+            <canvas id="revenueTrendsChart"></canvas>
+        </div>
+    </div>
 </div>
 
 <!-- ── Student Table ── -->
 <div class="card table-card">
     <div class="section-header-actions" style="margin-bottom:12px;">
-        <h3 class="card-title" style="margin-bottom:0;">Student List{% if campus %} &mdash; {{ odoo_instances[campus].name }}{% endif %}</h3>
+        <h3 class="card-title" style="margin-bottom:0;">Student Directory Snapshot{% if campus %} &mdash; {{ odoo_instances[campus].name }}{% endif %}</h3>
         <form method="GET" action="/students" style="display:flex;gap:8px;">
             <div class="search-input-wrap quick-search">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -173,6 +215,7 @@
 <script>
     const trendsData = {{ trends | tojson }};
     const demographicsData = {{ demographics | tojson }};
+    const revenueTrendsData = {{ revenue_trends | tojson }};
 
     function updateEnrollmentChart(year) {
         if (!window.enrollmentChartInstance) {

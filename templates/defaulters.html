@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <p class="breadcrumb">EXECUTIVE ANALYTICS &rsaquo; <strong>DEFAULTERS</strong></p>
+        <h1>Outstanding Collections</h1>
+        <p class="page-desc">Fee recovery and outstanding balance analysis</p>
+    </div>
+</div>
+
+<div class="card table-card" style="margin-top:20px">
+  <div class="table-responsive">
+    <table class="data-table">
+    <thead>
+      <tr>
+        <th>STUDENT ID</th>
+        <th>STUDENT NAME</th>
+        <th>CLASS</th>
+        <th>AMOUNT DUE</th>
+        <th>DAYS OVERDUE</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in defaulters %}
+      <tr>
+        <td style="font-family: monospace;">{{ d.student_id }}</td>
+        <td><strong>{{ d.name }}</strong></td>
+        <td>{{ d['class'] }}</td>
+        <td style="color: #EF4444; font-weight: 600;">{{ d.amount_due }}</td>
+        <td><span class="badge-chip negative" style="background: #FEE2E2; color: #B91C1C;">{{ d.days_overdue }} Days</span></td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="5" style="text-align:center; padding:40px;">No defaulter records found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+
+{% endblock %}

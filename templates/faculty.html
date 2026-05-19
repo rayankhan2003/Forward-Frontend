@@ -8,12 +8,10 @@
 <div class="card table-card">
   <div class="page-header-actions" style="margin-bottom: 16px">
     <div>
-      <h3 class="card-title">Institutional Faculty</h3>
+      <h3 class="card-title">Faculty Directory</h3>
       <p class="card-subtitle">
-        Showing {{ faculty|length }} registered educators {% if campus %} from
-        {{ odoo_instances[campus].name }} {% else %} across all campuses {%
-        endif %} {% if selected_subject %} (Filtered by: {{ selected_subject }})
-        {% endif %}
+        Displaying {{ faculty|length }} faculty records across selected campuses.
+        {% if selected_subject %} (Filtered by: {{ selected_subject }}) {% endif %}
       </p>
       <!-- SUBJECT FILTER -->
       <form method="GET">

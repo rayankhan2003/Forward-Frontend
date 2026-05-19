@@ -41,6 +41,45 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    /* ── Revenue Trends line chart ── */
+    const revCtx = document.getElementById('revenueTrendsChart');
+    if (revCtx && typeof revenueTrendsData !== 'undefined') {
+        new Chart(revCtx.getContext('2d'), {
+            type: 'line',
+            data: revenueTrendsData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#E2E8F0', drawBorder: false },
+                        ticks: { font: { family: 'Inter', size: 11 } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { family: 'Inter', size: 11, weight: '700' },
+                            color: '#0F172A'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 20,
+                            font: { family: 'Inter', size: 12, weight: '600' }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     /* ── Student Demographics donut ── */
     // Removed as per UI update: Demographics card is no longer part of the dashboard.
 

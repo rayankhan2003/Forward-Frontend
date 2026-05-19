@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, render_template, flash, redirect, url_for
 import api_client
+import finance_client
 
 app = Flask(__name__)
 app.secret_key = 'forward-admin-secret-2026'
@@ -40,6 +41,10 @@ def dashboard():
         odoo_students  = api_client.get_all_odoo_students()
         campus = ''
 
+    # Fetch executive financial KPIs (Mock/Boys School)
+    finance_kpis = finance_client.get_financial_kpis()
+    revenue_trends = finance_client.get_revenue_trends()
+
     return render_template('dashboard.html',
                            metrics=metrics, trends=trends,
                            campuses=campuses,
@@ -48,7 +53,9 @@ def dashboard():
                            odoo_instances=api_client.ODOO_INSTANCES,
                            odoo_students=odoo_students[:10],
                            active_page='dashboard',
-                           campus=campus)
+                           campus=campus,
+                           finance_kpis=finance_kpis,
+                           revenue_trends=revenue_trends)
 
 @app.route('/campuses')
 def campuses():
@@ -160,6 +167,33 @@ def api_students():
     page = request.args.get('page', 1, type=int)
     students, total = api_client.get_students(page=page)
     return jsonify({"students": students, "total": total})
+
+# ── Executive Intelligence Routes ──
+
+@app.route('/revenue')
+def revenue():
+    trends = finance_client.get_revenue_trends()
+    return render_template('revenue.html', trends=trends, active_page='revenue')
+
+@app.route('/profit-loss')
+def profit_loss():
+    pl_data = finance_client.get_profit_loss()
+    return render_template('profit_loss.html', pl_data=pl_data, active_page='profit_loss')
+
+@app.route('/defaulters')
+def defaulters():
+    defaulters_data = finance_client.get_defaulters()
+    return render_template('defaulters.html', defaulters=defaulters_data, active_page='defaulters')
+
+@app.route('/campus-performance')
+def campus_performance():
+    perf_data = finance_client.get_campus_financial_performance()
+    return render_template('campus_performance.html', performance=perf_data, active_page='campus_performance')
+
+@app.route('/executive-analytics')
+def executive_analytics():
+    kpis = finance_client.get_financial_kpis()
+    return render_template('executive_analytics.html', kpis=kpis, active_page='executive_analytics')
 
 if __name__ == '__main__':
     app.run(debug=True)

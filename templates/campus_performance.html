@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <p class="breadcrumb">EXECUTIVE ANALYTICS &rsaquo; <strong>CAMPUS PERFORMANCE</strong></p>
+        <h1>Campus Performance Overview</h1>
+        <p class="page-desc">Comparative operational and financial insights across campuses</p>
+    </div>
+</div>
+
+<div class="card table-card" style="margin-top:20px">
+  <div class="table-responsive">
+    <table class="data-table">
+    <thead>
+      <tr>
+        <th>CAMPUS</th>
+        <th>REVENUE</th>
+        <th>EXPENSES</th>
+        <th>PROFIT</th>
+        <th>RECOVERY RATE</th>
+        <th>STATUS</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in performance %}
+      <tr>
+        <td><strong>{{ p.name }}</strong></td>
+        <td style="color: #10B981; font-weight: 600;">{{ p.revenue }}</td>
+        <td style="color: #EF4444; font-weight: 600;">{{ p.expense }}</td>
+        <td style="color: #3B82F6; font-weight: 700;">{{ p.profit }}</td>
+        <td>{{ p.recovery_rate }}%</td>
+        <td>
+            {% if p.status == 'Excellent' %}
+                <span class="campus-badge" style="background: #D1FAE5; color: #065F46;">{{ p.status }}</span>
+            {% else %}
+                <span class="campus-badge" style="background: #FEF3C7; color: #92400E;">{{ p.status }}</span>
+            {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+
+{% endblock %}

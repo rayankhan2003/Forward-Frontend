@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <p class="breadcrumb">EXECUTIVE ANALYTICS &rsaquo; <strong>PROFIT & LOSS</strong></p>
+        <h1>Income Statement Overview</h1>
+        <p class="page-desc">Summary of Income and Expenses</p>
+    </div>
+</div>
+
+<div class="metrics-grid">
+    <div class="card metric-card" style="border-top: 4px solid #10B981;">
+        <span class="metric-label">TOTAL INCOME</span>
+        <span class="metric-value">PKR {{ "{:,.0f}".format(pl_data.summary.total_income) }}</span>
+    </div>
+    <div class="card metric-card" style="border-top: 4px solid #EF4444;">
+        <span class="metric-label">TOTAL EXPENSE</span>
+        <span class="metric-value">PKR {{ "{:,.0f}".format(pl_data.summary.total_expense) }}</span>
+    </div>
+    <div class="card metric-card" style="border-top: 4px solid #3B82F6;">
+        <span class="metric-label">NET PROFIT</span>
+        <span class="metric-value">PKR {{ "{:,.0f}".format(pl_data.summary.net_profit) }}</span>
+    </div>
+    <div class="card metric-card" style="border-top: 4px solid #8B5CF6;">
+        <span class="metric-label">MARGIN</span>
+        <span class="metric-value">{{ pl_data.summary.margin_percent }}%</span>
+    </div>
+</div>
+
+<div class="charts-row" style="margin-top:20px; grid-template-columns: 1fr 1fr;">
+    <div class="card table-card">
+        <h3 class="card-title" style="margin-bottom: 12px;">Income Breakdown</h3>
+        <table class="data-table">
+            <thead><tr><th>Category</th><th style="text-align:right;">Amount (PKR)</th></tr></thead>
+            <tbody>
+                {% for item in pl_data.income %}
+                <tr><td>{{ item.category }}</td><td style="text-align:right; font-weight: 600; color: #10B981;">{{ "{:,.0f}".format(item.amount) }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="card table-card">
+        <h3 class="card-title" style="margin-bottom: 12px;">Expense Breakdown</h3>
+        <table class="data-table">
+            <thead><tr><th>Category</th><th style="text-align:right;">Amount (PKR)</th></tr></thead>
+            <tbody>
+                {% for item in pl_data.expenses %}
+                <tr><td>{{ item.category }}</td><td style="text-align:right; font-weight: 600; color: #EF4444;">{{ "{:,.0f}".format(item.amount) }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
